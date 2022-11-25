@@ -1,0 +1,46 @@
+<div class="header-blue">
+  <nav class="navbar navbar-dark navbar-expand-md navigation-clean-search">
+    <div class="container">
+      <a class="navbar-brand" href="/">WONDERLAND</a>
+      <button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navcol-1">
+        <ul class="nav navbar-nav">
+          <li class="nav-item" role="presentation"><a class="nav-link" href="/about">Hakkımızda</a></li>
+          <li class="nav-item" role="presentation"><a class="nav-link " href="#">Bloglar</a></li>
+          <li class="dropdown">
+            <a class="dropdown-toggle nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href="#">Kategoriler</a>
+            <div class="dropdown-menu" role="menu">
+              <a class="dropdown-item" role="presentation" href="#">Asya</a>
+              <a class="dropdown-item" role="presentation" href="#">Avrupa</a>
+              <a class="dropdown-item" role="presentation" href="#">Afrika</a>
+              <a class="dropdown-item" role="presentation" href="#">Amerika</a>
+            </div>
+          </li>
+          <li class="nav-item" role="presentation"><a class="nav-link " href="/contacts">İletişim</a></li>
+        </ul>
+        <form class="form-inline mr-auto" target="_self">
+          <div class="form-group">
+            <label for="search-field"><i class="fa fa-search"></i></label>
+            <input class="form-control search-field" type="search" name="search" id="search-field">
+          </div>
+        </form>
+        {% if session["logged_in"] %}
+          <a class="btn" style="color: #ffffff00; background-color: #ffffff00;" href="/profile"><i class="fa-solid fa-user" style="color: #fff"></i></a>
+          <a class="btn btn-light action-button" role="button" href="/logout">Çıkış Yap</a>
+        {% else %}
+          <span class="navbar-text"> <a href="/login" class="login">Giriş Yap</a></span>
+          <a class="btn btn-light action-button" role="button" href="/register">Kayıt Ol</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+  <div class="iphone-mockup">
+    <div class="container-text">
+      <img src=" http://127.0.0.1:8081/assets/img/bg2.jpg" class="device">
+      <div class="centered">Ayaklar, kalbin gittiği yere gider...</div>
+    </div>
+  </div>
+</div>

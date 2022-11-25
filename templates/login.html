@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{%block body%}
+<div class="col-6 container" style="margin-bottom: 8em">
+  <h3>Giriş Yap</h3>
+  <hr>
+  {% from "includes/formhelp.html" import render_field %}
+  <form method=post>
+      {{ render_field(form.username ,class="form-control")}}
+      {{ render_field(form.password,class="form-control") }}
+    <button type="submit" class="btn" style="color: #fff; background: #002921; padding-left: 2em; padding-right: 2em;">Giriş</button>
+  </form>
+</div>
+{%endblock%}
