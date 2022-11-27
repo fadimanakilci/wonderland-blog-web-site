@@ -36,6 +36,11 @@ class ProfileForm(Form):
         validators.EqualTo(fieldname="confirm",message="Parolanız Uyuşmuyor")        
     ])
     confirm=PasswordField("Parola Doğrula")
+    
+class AddBlogForm(Form):
+    title=StringField("Başlık",validators=[validators.Length(min=3, max=155)])
+    category = StringField("Kategori")
+    contentt = TextAreaField(u"Metin",validators=[validators.InputRequired()])
 
 def login_required(f):
     @wraps(f)
@@ -137,6 +142,7 @@ def login():
 @app.route("/profile",methods=["GET","POST"])
 def profile():
     form = ProfileForm(request.form)
+    blogForm = AddBlogForm(request.form)
     if(request.method=="POST" and form.validate()):
         name=form.name.data
         username=form.username.data
@@ -158,11 +164,34 @@ def profile():
             data=cursor.fetchone()
             mysql.connection.commit()
             cursor.close()
-            return redirect(url_for("profile",user=data, form=form))
+            return redirect(url_for("profile",user=data, form=form, blogForm=blogForm))
         else:
             mysql.connection.commit()
             cursor.close()
             flash("Böyle bir kullanıcı bulunmuyor...","danger")
+            return redirect(url_for("profile"))
+    if (request.method=="POST" and blogForm.validate()):
+        title=blogForm.title.data
+        category=blogForm.category.data
+        contentt=str(blogForm.contentt.data)
+        cursor = mysql.connection.cursor()
+
+        sorgu= "Select * from users where username = %s"
+        result=cursor.execute(sorgu,(session["username"],)) 
+        
+        if result>0:
+            data=cursor.fetchone()
+            sorgu2= "Insert into blogs(user_id,title,category_id,content) VALUES(%s,%s,%s,%s) "
+            cursor.execute(sorgu2,(data['id'],title,category,contentt))
+            flash("Yeni Blog Eklendi...","success")
+
+            mysql.connection.commit()
+            cursor.close()
+            return redirect(url_for("profile", form=form, blogForm=blogForm))
+        else:
+            mysql.connection.commit()
+            cursor.close()
+            flash("Yeni Blog Eklenirken Hata Oluştu...","danger")
             return redirect(url_for("profile"))
     else:
         cursor = mysql.connection.cursor()
@@ -172,12 +201,13 @@ def profile():
             data=cursor.fetchone()
             mysql.connection.commit()
             cursor.close()
-            return render_template("profile.html",user=data, form=form)
+            return render_template("profile.html",user=data, form=form, blogForm=blogForm)
         else:
             mysql.connection.commit()
             cursor.close()
             flash("Böyle bir kullanıcı bulunmuyor...","danger")
             return render_template("profile.html")
+    
         
 
 @app.route("/articles")

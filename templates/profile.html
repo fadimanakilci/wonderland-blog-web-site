@@ -1,20 +1,49 @@
 {% extends "layout.html" %}
 {% block body %}
-<div class="col-6 container" style="margin-bottom: 10em;">
-    <h3>Profilim</h3>
-    <hr>
+<div class="col-8 container" style="margin-bottom: 10em; margin-top:0px; text-align:center">
     {% if user %}
-        {% from "includes/formhelp.html" import render_field %}
-        <form method=post>
-            {{ render_field(form.name ,class="form-control", value=user.name)}}
-            {{ render_field(form.username ,class="form-control", value=user.username)}}
-            {{ render_field(form.email,class="form-control", value=user.email)}}
-            {{ render_field(form.password,class="form-control")}}
-            {{ render_field(form.confirm,class="form-control")}}
-            <button type="submit" class="btn" style="color: #fff; background: #002921; padding-left: 2em; padding-right: 2em;">Kayıt Ol</button>
-        </form>
+        <h3>Profilim</h3>
+        <button class="collapsible" style="background-color: #BF3E11">Kullanıcı Bilgilerini Güncelle</button>
+        <div class="content">
+            {% from "includes/formhelp.html" import render_field %}
+            <form method=post style="padding: 20px 0px">
+                {{ render_field(form.name ,class="form-control", value=user.name)}}
+                {{ render_field(form.username ,class="form-control", value=user.username)}}
+                {{ render_field(form.email,class="form-control", value=user.email)}}
+                {{ render_field(form.password,class="form-control")}}
+                {{ render_field(form.confirm,class="form-control")}}
+                <button type="submit" class="btn" style="color: #fff; background: #002921; padding-left: 2em; padding-right: 2em;">Güncelle</button>
+            </form>
+        </div>
+        <button class="collapsible">Yeni Blog Ekle</button>
+        <div class="content">
+            {% from "includes/formhelp.html" import render_field %}
+            <form method=post style="padding: 20px 0px">
+                {{ render_field(blogForm.title ,class="form-control")}}
+                {{ render_field(blogForm.category ,class="form-control")}}
+                {{ render_field(blogForm.contentt,class="form-control", rows=18)}}
+                <button type="submit" class="btn" style="color: #fff; background: #002921; padding-left: 2em; padding-right: 2em;">Ekle</button>
+            </form>
+        </div>
+        <script>
+            var coll = document.getElementsByClassName("collapsible");
+            var i;
+
+            for (i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    if (content.style.maxHeight){
+                    content.style.maxHeight = null;
+                    } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    } 
+                });
+            }
+        </script>
     {% else %}
         <div class="alert alert-danger">Profil bulunamadı...</div>
     {% endif %}
+    
 </div>
 {% endblock body %}
