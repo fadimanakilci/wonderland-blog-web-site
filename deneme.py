@@ -137,14 +137,47 @@ def login():
 @app.route("/profile",methods=["GET","POST"])
 def profile():
     form = ProfileForm(request.form)
-    cursor = mysql.connection.cursor()
-    sorgu= "Select * from users where username = %s"
-    result=cursor.execute(sorgu,(session["username"],))    
-    if result>0:
-        data=cursor.fetchall()
-        return render_template("profile.html",user=data)
+    if(request.method=="POST" and form.validate()):
+        name=form.name.data
+        username=form.username.data
+        email=form.email.data
+        password = sha256_crypt.encrypt(form.password.data)
+
+        cursor = mysql.connection.cursor()
+        sorgu= "Update users set name=%s, username=%s, email=%s, password=%s where username = %s"
+        cursor.execute(sorgu,(name,username,email,password,session["username"]))
+
+        mysql.connection.commit()
+        cursor.close()
+        flash("Kullanıcı bilgileri güncellendi...","success")
+        session["username"] = username
+        cursor = mysql.connection.cursor()
+        sorgu= "Select * from users where username = %s"
+        result=cursor.execute(sorgu,(session["username"],)) 
+        if result>0:
+            data=cursor.fetchone()
+            mysql.connection.commit()
+            cursor.close()
+            return redirect(url_for("profile",user=data, form=form))
+        else:
+            mysql.connection.commit()
+            cursor.close()
+            flash("Böyle bir kullanıcı bulunmuyor...","danger")
+            return redirect(url_for("profile"))
     else:
-        return render_template("profile.html")
+        cursor = mysql.connection.cursor()
+        sorgu= "Select * from users where username = %s"
+        result=cursor.execute(sorgu,(session["username"],)) 
+        if result>0:
+            data=cursor.fetchone()
+            mysql.connection.commit()
+            cursor.close()
+            return render_template("profile.html",user=data, form=form)
+        else:
+            mysql.connection.commit()
+            cursor.close()
+            flash("Böyle bir kullanıcı bulunmuyor...","danger")
+            return render_template("profile.html")
         
 
 @app.route("/articles")

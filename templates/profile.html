@@ -1,22 +1,20 @@
 {% extends "layout.html" %}
-{%block body%}
-<div class="col-6 container" style="margin-bottom: 8em; text-align: center;">
+{% block body %}
+<div class="col-6 container" style="margin-bottom: 10em;">
     <h3>Profilim</h3>
     <hr>
     {% if user %}
         {% from "includes/formhelp.html" import render_field %}
         <form method=post>
-            {{ render_field(form.name ,class="form-control")}}
-            {{ render_field(form.username ,class="form-control")}}
-            {{ render_field(form.email,class="form-control" )}}
-            {{ render_field(form.password,class="form-control") }}
-            {{ render_field(form.confirm,class="form-control" )}}
+            {{ render_field(form.name ,class="form-control", value=user.name)}}
+            {{ render_field(form.username ,class="form-control", value=user.username)}}
+            {{ render_field(form.email,class="form-control", value=user.email)}}
+            {{ render_field(form.password,class="form-control")}}
+            {{ render_field(form.confirm,class="form-control")}}
             <button type="submit" class="btn" style="color: #fff; background: #002921; padding-left: 2em; padding-right: 2em;">Kayıt Ol</button>
         </form>
-        <hr>
-        <p style="color: #000">{{user.username}}</p>
     {% else %}
         <div class="alert alert-danger">Profil bulunamadı...</div>
     {% endif %}
 </div>
-{%endblock body%}
+{% endblock body %}
