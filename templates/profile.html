@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
-<div class="col-8 container" style="margin-bottom: 10em; margin-top:0px; text-align:center">
+<div class="col-10 container" style="margin-bottom: 10em; margin-top:0px; text-align:center">
     {% if user %}
         <h3>Profilim</h3>
+        <br>
         <button class="collapsible" style="background-color: #BF3E11">Kullanıcı Bilgilerini Güncelle</button>
         <div class="content">
             {% from "includes/formhelp.html" import render_field %}
@@ -41,6 +42,19 @@
                 });
             }
         </script>
+        <br>
+        <br>
+        <h3>Bloglarım</h3>
+        <br>
+        {% for blog in blogs %}
+            <div class="card">
+                <div class="card-container">
+                    <h4><b>{{ blog.title }}</b></h4>
+                    <p align="justify">{{ blog.content }}</p>
+                </div>
+            </div>
+            <br>
+        {% endfor %}
     {% else %}
         <div class="alert alert-danger">Profil bulunamadı...</div>
     {% endif %}

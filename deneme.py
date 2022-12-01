@@ -143,6 +143,15 @@ def login():
 def profile():
     form = ProfileForm(request.form)
     blogForm = AddBlogForm(request.form)
+
+    cursor = mysql.connection.cursor()
+    sorguUser = "Select * from users where username = %s"
+    resultUser = cursor.execute(sorguUser,(session["username"],))
+    data=cursor.fetchone()
+    sorguBlog = "Select * from blogs where user_id = %s order by id desc"
+    resultBlog = cursor.execute(sorguBlog,(data['id'],)) 
+    blogs=cursor.fetchall()
+    
     if(request.method=="POST" and form.validate()):
         name=form.name.data
         username=form.username.data
@@ -153,18 +162,16 @@ def profile():
         sorgu= "Update users set name=%s, username=%s, email=%s, password=%s where username = %s"
         cursor.execute(sorgu,(name,username,email,password,session["username"]))
 
-        mysql.connection.commit()
-        cursor.close()
         flash("Kullanıcı bilgileri güncellendi...","success")
         session["username"] = username
-        cursor = mysql.connection.cursor()
+
         sorgu= "Select * from users where username = %s"
         result=cursor.execute(sorgu,(session["username"],)) 
         if result>0:
             data=cursor.fetchone()
             mysql.connection.commit()
             cursor.close()
-            return redirect(url_for("profile",user=data, form=form, blogForm=blogForm))
+            return redirect(url_for("profile",user=data, form=form, blogForm=blogForm, blogs=blogs))
         else:
             mysql.connection.commit()
             cursor.close()
@@ -174,34 +181,25 @@ def profile():
         title=blogForm.title.data
         category=blogForm.category.data
         contentt=str(blogForm.contentt.data)
-        cursor = mysql.connection.cursor()
-
-        sorgu= "Select * from users where username = %s"
-        result=cursor.execute(sorgu,(session["username"],)) 
         
-        if result>0:
-            data=cursor.fetchone()
+        if resultUser>0:
             sorgu2= "Insert into blogs(user_id,title,category_id,content) VALUES(%s,%s,%s,%s) "
             cursor.execute(sorgu2,(data['id'],title,category,contentt))
             flash("Yeni Blog Eklendi...","success")
 
             mysql.connection.commit()
             cursor.close()
-            return redirect(url_for("profile", form=form, blogForm=blogForm))
+            return redirect(url_for("profile", form=form, blogForm=blogForm, blogs=blogs))
         else:
             mysql.connection.commit()
             cursor.close()
             flash("Yeni Blog Eklenirken Hata Oluştu...","danger")
             return redirect(url_for("profile"))
     else:
-        cursor = mysql.connection.cursor()
-        sorgu= "Select * from users where username = %s"
-        result=cursor.execute(sorgu,(session["username"],)) 
-        if result>0:
-            data=cursor.fetchone()
+        if resultUser>0:
             mysql.connection.commit()
             cursor.close()
-            return render_template("profile.html",user=data, form=form, blogForm=blogForm)
+            return render_template("profile.html",user=data, form=form, blogForm=blogForm, blogs=blogs)
         else:
             mysql.connection.commit()
             cursor.close()
