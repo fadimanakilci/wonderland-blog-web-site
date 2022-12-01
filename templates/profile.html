@@ -48,10 +48,12 @@
         <br>
         {% for blog in blogs %}
             <div class="card">
-                <div class="card-container">
-                    <h4><b>{{ blog.title }}</b></h4>
-                    <p align="justify">{{ blog.content }}</p>
-                </div>
+                <a href="/blog/{{blog.id}}">
+                    <div class="card-container">
+                        <h4><b>{{ blog.title }}</b></h4>
+                        <p align="justify" class="card-text">{{ blog.content }}</p>
+                    </div>
+                </a>
             </div>
             <br>
         {% endfor %}

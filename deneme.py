@@ -27,20 +27,20 @@ class ArticleForm(Form):
     content=TextAreaField("İçerik",validators=[validators.Length(min=8)])
 
 class ProfileForm(Form):
-    name=StringField("İsim Soyisim",validators=[validators.Length(min=6, max=30)])
-    username = StringField("Kullanıcı adı",validators=[validators.Length(min=6, max=30)])
-    email = StringField("E posta",validators=[validators.email(message="Geçerli bir email adresi giriniz")])
-    password = PasswordField("Parola",validators=[
+    name = StringField("İsim Soyisim", validators = [validators.Length(min = 6, max = 30)])
+    username = StringField("Kullanıcı adı", validators = [validators.Length(min = 6, max = 30)])
+    email = StringField("E posta", validators = [validators.email(message = "Geçerli bir email adresi giriniz")])
+    password = PasswordField("Parola", validators = [
         validators.DataRequired("Lütfen bir parola belileyin"),
-        validators.length(min=8),
-        validators.EqualTo(fieldname="confirm",message="Parolanız Uyuşmuyor")        
+        validators.length(min = 8),
+        validators.EqualTo(fieldname="confirm", message = "Parolanız Uyuşmuyor")        
     ])
-    confirm=PasswordField("Parola Doğrula")
+    confirm = PasswordField("Parola Doğrula")
     
 class AddBlogForm(Form):
-    title=StringField("Başlık",validators=[validators.Length(min=3, max=155)])
+    title = StringField("Başlık", validators = [validators.Length(min = 3, max = 155)])
     category = StringField("Kategori")
-    contentt = TextAreaField(u"Metin",validators=[validators.InputRequired()])
+    contentt = TextAreaField(u"Metin", validators = [validators.InputRequired()])
 
 def login_required(f):
     @wraps(f)
@@ -53,7 +53,7 @@ def login_required(f):
     return decorator_function
 
 #Db bağlantı konfigürasyonu başladı
-app.config["MYSQL_HOST"] ="localhost"
+app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = ""
 app.config["MYSQL_DB"] = "bootcamp"
@@ -74,18 +74,22 @@ def about():
 def contacts():
     return render_template("contacts.html")
 
-@app.route("/article/<string:id>")
-def article(id):
-    cursor=mysql.connection.cursor()
-    sorgu="Select * from makale where id = %s"
+@app.route("/blog/<string:id>")
+def blog(id):
+    cursor = mysql.connection.cursor()
+    sorgu = "Select * from blogs where id = %s"
     result = cursor.execute(sorgu,(id,))
+    blog = cursor.fetchone()
+    sorguUser = "Select * from users where id = %s"
+    resultUser = cursor.execute(sorguUser, (blog['user_id'],)) 
+    user = cursor.fetchone()
+
     if result > 0:
-        article = cursor.fetchone()
-        return render_template("article.html",article=article)
+        return render_template("blog.html", blog = blog, user = user)
     else:
-        return render_template("article.html")
+        return render_template("blog.html")
     
-@app.route("/register",methods=["GET","POST"])
+@app.route("/register", methods = ["GET","POST"])
 def register():
     form = RegisterForm(request.form)
     if(request.method=="POST" and form.validate()):
@@ -105,7 +109,7 @@ def register():
     else:
         return render_template("register.html",form=form)
 
-@app.route("/login",methods=["GET","POST"])
+@app.route("/login", methods = ["GET","POST"])
 def login():
     form = LoginForm(request.form)
     if(request.method=="POST"):
@@ -139,20 +143,20 @@ def login():
             return redirect(url_for("login"))
     return render_template("login.html",form=form)
 
-@app.route("/profile",methods=["GET","POST"])
+@app.route("/profile", methods = ["GET","POST"])
 def profile():
     form = ProfileForm(request.form)
     blogForm = AddBlogForm(request.form)
 
     cursor = mysql.connection.cursor()
     sorguUser = "Select * from users where username = %s"
-    resultUser = cursor.execute(sorguUser,(session["username"],))
+    resultUser = cursor.execute(sorguUser, (session["username"],))
     data=cursor.fetchone()
     sorguBlog = "Select * from blogs where user_id = %s order by id desc"
-    resultBlog = cursor.execute(sorguBlog,(data['id'],)) 
+    resultBlog = cursor.execute(sorguBlog, (data['id'],)) 
     blogs=cursor.fetchall()
     
-    if(request.method=="POST" and form.validate()):
+    if(request.method == "POST" and form.validate()):
         name=form.name.data
         username=form.username.data
         email=form.email.data
@@ -177,7 +181,7 @@ def profile():
             cursor.close()
             flash("Böyle bir kullanıcı bulunmuyor...","danger")
             return redirect(url_for("profile"))
-    if (request.method=="POST" and blogForm.validate()):
+    if (request.method == "POST" and blogForm.validate()):
         title=blogForm.title.data
         category=blogForm.category.data
         contentt=str(blogForm.contentt.data)
@@ -208,16 +212,16 @@ def profile():
     
         
 
-@app.route("/articles")
-def articles():
+@app.route("/blogs")
+def blogs():
     cursor = mysql.connection.cursor()
-    sorgu = "Select * from makale"
-    result=cursor.execute(sorgu)
-    if result >0:
-        articles=cursor.fetchall()
-        return render_template("articles.html",articles=articles)
+    sorgu = "Select * from blogs order by id desc"
+    result = cursor.execute(sorgu)
+    if result > 0:
+        blogs=cursor.fetchall()
+        return render_template("blogs.html", blogs = blogs)
     else:
-        return render_template("articles.html")
+        return render_template("blogs.html")
 
 @app.route("/dashboard")
 @login_required
@@ -231,7 +235,7 @@ def dashboard():
     else:
         return render_template("dashboard.html")
 
-@app.route("/addarticle",methods=["GET","POST"])
+@app.route("/addarticle", methods = ["GET","POST"])
 @login_required
 def addarticle():
     form=ArticleForm(request.form)
@@ -263,7 +267,7 @@ def delete(id):
         flash("Böyle bir makale yok veya bu işlem için yetkiniz yok","danger")
         return redirect(url_for("dashboard"))
 
-@app.route("/edit/<string:id>",methods=["GET","POST"])
+@app.route("/edit/<string:id>", methods = ["GET","POST"])
 @login_required
 def edit(id):
     if request.method == "GET":
@@ -297,7 +301,7 @@ def logout():
     session.clear()
     return redirect(url_for("index"))
     
-@app.route("/search",methods=["GET","POST"])
+@app.route("/search", methods = ["GET","POST"])
 def search():
     if request == "GET":
         return redirect(url_for("index"))

@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="col-10 container" style="margin-bottom: 10em; margin-top:0px; text-align:center">
+    <h3>Bloglar</h3>
+    <br>
+    {% if blogs %}
+    <!--
+        <form action="/search" method="post">
+            <input type="text" name="keyword" class = "input-sm" maxlenght="64" placeholder ="Ara..">
+            <button type="submit" class="btn btn-danger">Ara</button> 
+        </form>
+    -->
+        <br>
+    <!--
+        <ul class="list-group">
+            {% for blog in blogs %} 
+                <li class="list-group-item"><a href="/blog/{{blog.id}}">{{blog.title}} </a></li>
+            {% endfor %}
+        </ul>
+    -->
+        {% for blog in blogs %}
+            <div class="card">
+                <a href="/blog/{{ blog.id }}">
+                    <div class="card-container">
+                        <h4><b>{{ blog.title }}</b></h4>
+                        <p align="justify" class="card-text">{{ blog.content }}</p>
+                    </div>
+                </a>
+            </div>
+            <br>
+        {% endfor %}
+    {% else %}
+    <div class="alert alert-danger">Henüz eklenmiş bir blog yazısı bulunmamaktadır...</div>
+    {% endif %}
+</div>
+{% endblock body %}
+

@@ -296,6 +296,33 @@
         .card-container {
             padding: 20px 30px;
         }
+
+        .card-text {
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            word-wrap: break-word;
+            -webkit-line-clamp: 3; /* number of lines to show */
+            line-clamp: 3; 
+            -webkit-box-orient: vertical;
+            text-align:justify;
+            height: 4.0em; /* Fallback for non-webkit, line-height * 2 */
+            line-height: 1.3em;
+            color: #002921;
+        }
+
+        .card-text::after {
+            content: "...";
+            position: absolute;
+            right: -12px; 
+            bottom: 20px;
+        }
+
+        a:link {
+            text-decoration: none;
+            color: #002921;
+        }
     </style>
 </head>
 <body>
